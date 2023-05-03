@@ -3,6 +3,7 @@ from tkinter import filedialog
 import tkinter.messagebox as messagebox
 import pyautogui
 import time
+import webbrowser
 
 # Configurações da tela do programa
 window = tk.Tk()
@@ -59,6 +60,11 @@ def to_write():
 def exit_program():
     window.destroy()
 
+# Função Sefaz
+def search_sefaz():
+    webbrowser.open("https://www.nfe.fazenda.gov.br/portal/consultaRecaptcha.aspx?tipoConsulta=resumo&tipoConteudo=7PhJ+gAVw2g=")
+    
+    print("test sefaz")
 
 # Lista de butões na tela no programa
 searchFile = tk.Button(window, text="Buscar arquivo", width=20, command=FsearchFile)
@@ -69,5 +75,8 @@ writeButton.grid(row=2, column=1, padx=3, pady=3)
 
 exitButton = tk.Button(window, text="Sair do programa", width=20, command=exit_program)
 exitButton.grid(row=2, column=2, padx=5, pady=5)
+
+btn_sefaz = tk.Button(window ,text="Busca sefaz", width=20, command=search_sefaz)
+btn_sefaz.grid(row=2, column=0, padx=0, pady=0)
 
 window.mainloop()
