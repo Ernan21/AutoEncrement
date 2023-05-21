@@ -31,6 +31,7 @@ conteudo = []
 lista = []
 timeInit = 8
 separator = ";"
+username = os.getlogin()
 
 # Função para imprimir informações na tela de console
 def log(msg):
@@ -82,7 +83,7 @@ def openConfig():
     # Botões das configurações
     aplica = tk.Button(config, text="Aplicar", width=10, height=2, command=update)
     aplica.grid(row=2, column=0, padx=10, pady=10)
-
+    
     # Impedir que a janela principal seja usada enquanto a janela de configurações estiver aberta
     config.grab_set()
 
@@ -140,12 +141,20 @@ writeButton.grid(row=3, column=1, padx=3, pady=3)
 exitButton = tk.Button(window, text="Configurações", width=20, command=openConfig)
 exitButton.grid(row=3, column=2, padx=5, pady=5)
 
+versionText = tk.Label(window, text="Version 4", width=20)
+versionText.grid(row=4, column=0, padx=1, pady=5)
+
+usernameText = tk.Label(window, text="User: " + username , width=20)
+usernameText.grid(row=4, column=1, padx=1, pady=5)
+
 # Estilização
 window.configure(background=background_color)
 console.configure(font=("Courier", 10), insertbackground=text_color)
 searchFile.configure(bg=background_color, fg=text_color)
 writeButton.configure(bg=background_color, fg=text_color)
 exitButton.configure(bg=background_color, fg=text_color)
+versionText.configure(bg=background_color, fg=text_color)
+usernameText.configure(bg=background_color, fg=text_color)
 
 # Botões de verificação do sistema
 # verific = tk.Button(window, text="Verificar", command=lambda: print("Tempo de Inicialização: ", timeInit, " Separador utilizado é ", separator))
