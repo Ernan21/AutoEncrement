@@ -7,7 +7,7 @@ import os
 
 # Configurações da tela do programa
 window = tk.Tk()
-window.title("AutoEncremente Version 4")
+window.title("AutoEncremente")
 window.geometry("800x600")
 window.resizable(False, False)
 
@@ -31,6 +31,8 @@ conteudo = []
 lista = []
 timeInit = 8
 separator = ";"
+itensTime = 1
+reapeat = 2
 username = os.getlogin()
 
 # Função para imprimir informações na tela de console
@@ -43,6 +45,8 @@ def log(msg):
 def openConfig():
     global timeInit
     global separator
+    global separator
+    global itensTime
     global config  # Tornando config uma variável global
 
     # Função para atualizar as configurações
@@ -50,22 +54,27 @@ def openConfig():
         # Objetos globais
         global timeInit
         global separator
+        global reapeat
+        global itensTime
 
         # Atualizando valores dos objetos globais
         valueTimerInit = TimerInit.get()
         valueSeparator = separator_entry.get()
         timeInit = int(valueTimerInit)
         separator = valueSeparator
+        valueReapeat = reapeatVezes.get()
+        reapeat = int(valueReapeat)
+        valueItensTime = timerItens.get()
+        itensTime = float(valueItensTime)
         log("Aplicando configurações")
         config.destroy()
-        time.sleep(1.5)
+        time.sleep(0.5)
         log("Configurações Atualizadas")
 
 
     # Configuração da tela de configurações
     config = tk.Toplevel(window)
     config.title("Configurações")
-    config.geometry("400x200")
     config.resizable(False, False)
 
     # Labels e campos de entrada
@@ -79,10 +88,22 @@ def openConfig():
     TimerInit.grid(row=1, column=1, padx=10, pady=10)
     TimerInit.delete(0, tk.END)
     TimerInit.insert(0, timeInit)
+    
+    tk.Label(config, text="Vezes").grid(row=2, column=0, padx=10, pady=10)
+    reapeatVezes = tk.Spinbox(config, width=10)
+    reapeatVezes.grid(row=2, column=1, padx=10, pady=10)
+    reapeatVezes.delete(0, tk.END)
+    reapeatVezes.insert(0, reapeat)
+    
+    tk.Label(config, text="Tempo Entre itens").grid(row=3, column=0, padx=10, pady=10)
+    timerItens = tk.Spinbox(config, width=10)
+    timerItens.grid(row=3, column=1, padx=10, pady=10)
+    timerItens.delete(0, tk.END)
+    timerItens.insert(0, itensTime)
 
     # Botões das configurações
     aplica = tk.Button(config, text="Aplicar", width=10, height=2, command=update)
-    aplica.grid(row=2, column=0, padx=10, pady=10)
+    aplica.grid(row=5, column=0, padx=10, pady=10)
     
     # Impedir que a janela principal seja usada enquanto a janela de configurações estiver aberta
     config.grab_set()
@@ -111,13 +132,13 @@ def FsearchFile():
 def to_write():
     # Timer de tempoInicial segundos para iniciar a função do array
     time.sleep(timeInit)
-
+    # Quantas vezes o codigo ira se repetir
+    for i in range(reapeat):
     # Repete a função enquanto tiver itens no array
-    for item in lista:
-        pyautogui.typewrite(item.strip())
-        pyautogui.press("enter")
-        time.sleep(0.1)
-
+        for item in lista:
+            pyautogui.typewrite(item.strip())
+            pyautogui.press("enter")
+            time.sleep(itensTime)
     # Confirmação de termino do programa
     log("A lista de itens " + str(lista) + " foi digitada corretamente")
 
@@ -127,8 +148,8 @@ filebydirectory = tk.Entry(window, width=95, borderwidth=2)
 filebydirectory.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
 
 # Adicionando um help para o usuário
-log("\ Cada item deve ser separado por ponto e vírgula para um perfeito funcionamento!! /")
-log("\ ------------------------------------------------------------------------------- /")
+log("\ Cada item deve ser separado por '" + separator + "' para um perfeito funcionamento!! /")
+log("\ ------------------------------------------------------------------- /")
 
 # Lista de botões na tela do programa
 
@@ -160,5 +181,6 @@ usernameText.configure(bg=background_color, fg=text_color)
 # verific = tk.Button(window, text="Verificar", command=lambda: print("Tempo de Inicialização: ", timeInit, " Separador utilizado é ", separator))
 # verific.grid(row=3, column=0, padx=3, pady=5)
 # verific.configure(bg=background_color, fg=text_color)
+print(os.environ)
 
 window.mainloop()
