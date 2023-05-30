@@ -4,6 +4,7 @@ import tkinter.messagebox as messagebox
 import pyautogui
 import time
 import os
+import socket
 
 # Configurações da tela do programa
 window = tk.Tk()
@@ -31,9 +32,10 @@ conteudo = []
 lista = []
 timeInit = 8
 separator = ";"
-itensTime = 1
-reapeat = 2
+itensTime = 0.1
+reapeat = 1
 username = os.getlogin()
+ip_local = socket.gethostbyname(socket.gethostname())
 
 # Função para imprimir informações na tela de console
 def log(msg):
@@ -47,7 +49,7 @@ def openConfig():
     global separator
     global separator
     global itensTime
-    global config  # Tornando config uma variável global
+    global config
 
     # Função para atualizar as configurações
     def update():
@@ -66,6 +68,7 @@ def openConfig():
         reapeat = int(valueReapeat)
         valueItensTime = timerItens.get()
         itensTime = float(valueItensTime)
+        
         log("Aplicando configurações")
         config.destroy()
         time.sleep(0.5)
@@ -100,10 +103,11 @@ def openConfig():
     timerItens.grid(row=3, column=1, padx=10, pady=10)
     timerItens.delete(0, tk.END)
     timerItens.insert(0, itensTime)
-
+    
     # Botões das configurações
     aplica = tk.Button(config, text="Aplicar", width=10, height=2, command=update)
     aplica.grid(row=5, column=0, padx=10, pady=10)
+    
     
     # Impedir que a janela principal seja usada enquanto a janela de configurações estiver aberta
     config.grab_set()
@@ -167,6 +171,7 @@ versionText.grid(row=4, column=0, padx=1, pady=5)
 
 usernameText = tk.Label(window, text="User: " + username , width=20)
 usernameText.grid(row=4, column=1, padx=1, pady=5)
+
 
 # Estilização
 window.configure(background=background_color)
