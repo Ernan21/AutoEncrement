@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import tkinter.messagebox as messagebox
+import ctypes
 import pyautogui
 import time
 import os
@@ -11,6 +12,10 @@ window = tk.Tk()
 window.title("AutoEncremente")
 window.geometry("800x600")
 window.resizable(False, False)
+
+# Define o ícone da janela
+icon_path = "assets/AutoEncrement.ico"
+window.iconbitmap(default=icon_path)
 
 # Definindo cores
 background_color = "black"
@@ -78,6 +83,7 @@ def openConfig():
     # Configuração da tela de configurações
     config = tk.Toplevel(window)
     config.title("Configurações")
+    config.geometry("400x400")
     config.resizable(False, False)
 
     # Labels e campos de entrada
