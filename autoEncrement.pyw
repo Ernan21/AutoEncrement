@@ -1,11 +1,12 @@
 import tkinter as tk
 from tkinter import filedialog
 import tkinter.messagebox as messagebox
-import ctypes
+import winsound
 import pyautogui
 import time
 import os
 import socket
+import webbrowser
 
 # Configurações da tela do programa
 window = tk.Tk()
@@ -14,7 +15,7 @@ window.geometry("800x600")
 window.resizable(False, False)
 
 # Define o ícone da janela
-icon_path = "assets/AutoEncrement.ico"
+icon_path = "config/AutoEncrement.ico"
 window.iconbitmap(default=icon_path)
 
 # Definindo cores
@@ -32,13 +33,21 @@ console = tk.Text(
 )
 console.grid(row=1, column=0, padx=5, pady=5, columnspan=3)
 
+# Link para update do programa
+def openBrowserUpdate():
+    url = "https://github.com/Ernan21/AutoEncrement"
+    webbrowser.open(url)
+
 # Lista para armazenar o conteúdo do arquivo
 conteudo = []
 lista = []
-timeInit = 8
+timeInit = 5
 separator = ";"
 itensTime = 0.1
 reapeat = 1
+frasepadrao = ""
+
+# Pegando nome de usuario
 username = os.getlogin()
 ip_local = socket.gethostbyname(socket.gethostname())
 
@@ -50,19 +59,13 @@ def log(msg):
     console.see(tk.END)
 
 def openConfig():
-    global timeInit
-    global separator
-    global separator
-    global itensTime
-    global config
+    global timeInit, separator, itensTime, config, frasepadrao
 
     # Função para atualizar as configurações
     def update():
         # Objetos globais
-        global timeInit
-        global separator
-        global reapeat
-        global itensTime
+        
+        global timeInit, separator, itensTime, config, reapeat, frasepadrao
 
         # Atualizando valores dos objetos globais
         valueTimerInit = TimerInit.get()
@@ -73,6 +76,7 @@ def openConfig():
         reapeat = int(valueReapeat)
         valueItensTime = timerItens.get()
         itensTime = float(valueItensTime)
+        frasepadrao = valuefrasepadrao.get()
         
         log("Aplicando configurações")
         config.destroy()
@@ -83,38 +87,64 @@ def openConfig():
     # Configuração da tela de configurações
     config = tk.Toplevel(window)
     config.title("Configurações")
-    config.geometry("400x400")
+    config.geometry("830x400")
     config.resizable(False, False)
 
-    # Labels e campos de entrada
-    tk.Label(config, text="Separador:").grid(row=0, column=0, padx=10, pady=10)
-    separator_entry = tk.Entry(config, width=10)
-    separator_entry.grid(row=0, column=1, padx=10, pady=10)
-    separator_entry.insert(0, separator)
+    # Estilização da tela de configurações
+    config.configure(background=background_color)
 
-    tk.Label(config, text="Tempo de Inicialização:").grid(row=1, column=0, padx=10, pady=10)
+
+    def validate_separator_input(*args):
+        separator = separator_entry.get()
+        if len(separator) > 1:
+            separator_entry.set(separator[:1])
+
+    tk.Label(config, text="Separador:", fg=text_color, bg=background_color).grid(row=0, column=0, padx=10, pady=10)
+    separator_entry = tk.StringVar()
+    separator_entry.trace('w', validate_separator_input)
+    separator_entry.set(separator)
+    separator_entry_widget = tk.Entry(config, width=10, textvariable=separator_entry)
+    separator_entry_widget.grid(row=0, column=1, padx=10, pady=10)
+
+
+    tk.Label(config, text="Tempo de Inicialização:", fg=text_color, bg=background_color).grid(row=1, column=0, padx=10, pady=10)
     TimerInit = tk.Spinbox(config, width=10)
     TimerInit.grid(row=1, column=1, padx=10, pady=10)
     TimerInit.delete(0, tk.END)
     TimerInit.insert(0, timeInit)
     
-    tk.Label(config, text="Vezes").grid(row=2, column=0, padx=10, pady=10)
+    tk.Label(config, text="Vezes", fg=text_color, bg=background_color).grid(row=2, column=0, padx=10, pady=10)
     reapeatVezes = tk.Spinbox(config, width=10)
     reapeatVezes.grid(row=2, column=1, padx=10, pady=10)
     reapeatVezes.delete(0, tk.END)
     reapeatVezes.insert(0, reapeat)
     
-    tk.Label(config, text="Tempo Entre itens").grid(row=3, column=0, padx=10, pady=10)
+    tk.Label(config, text="Tempo Entre itens", fg=text_color, bg=background_color).grid(row=3, column=0, padx=10, pady=10)
     timerItens = tk.Spinbox(config, width=10)
     timerItens.grid(row=3, column=1, padx=10, pady=10)
     timerItens.delete(0, tk.END)
     timerItens.insert(0, itensTime)
     
+    tk.Label(config, text="Texto padrão para ser adicionado entre os separadores", fg=text_color, bg=background_color).grid(row=4, column=0, padx=10, pady=10)
+    valuefrasepadrao = tk.Entry(config, width=100)
+    valuefrasepadrao.grid(row=5, column=0, padx=10, pady=10)
+    valuefrasepadrao.delete(0, tk.END)
+    valuefrasepadrao.insert(0 ,frasepadrao)
+    
     # Botões das configurações
-    aplica = tk.Button(config, text="Aplicar", width=10, height=2, command=update)
-    aplica.grid(row=5, column=0, padx=10, pady=10)
+    Salvar = tk.Button(config, text="Salvar", width=10, height=2, command=update)
+    Salvar.grid(row=10, column=1, padx=10, pady=10)
+    Salvar.configure(bg=background_color, fg=text_color)
+
+    Sair = tk.Button(config, text="Sair", width=10, height=2, command=config.destroy)
+    Sair.grid(row=10, column=2, padx=10, pady=10)
+    Sair.configure(bg=background_color, fg=text_color)
     
-    
+    def on_closing():
+        if messagebox.askokcancel("Aviso", "Ao sair, as configurações feitas não serão aplicadas"):
+            config.destroy()
+    config.protocol("WM_DELETE_WINDOW", on_closing)
+
     # Impedir que a janela principal seja usada enquanto a janela de configurações estiver aberta
     config.grab_set()
 
@@ -146,10 +176,12 @@ def to_write():
     for i in range(reapeat):
     # Repete a função enquanto tiver itens no array
         for item in lista:
+            pyautogui.typewrite(frasepadrao)
             pyautogui.typewrite(item.strip())
             pyautogui.press("enter")
             time.sleep(itensTime)
     # Confirmação de termino do programa
+    winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
     log("A lista de itens " + str(lista) + " foi digitada corretamente")
 
 
@@ -172,11 +204,14 @@ writeButton.grid(row=3, column=1, padx=3, pady=3)
 exitButton = tk.Button(window, text="Configurações", width=20, command=openConfig)
 exitButton.grid(row=3, column=2, padx=5, pady=5)
 
-versionText = tk.Label(window, text="Version 4", width=20)
+versionText = tk.Label(window, text="Version 4", width=20, fg=text_color, bg=background_color)
 versionText.grid(row=4, column=0, padx=1, pady=5)
 
-usernameText = tk.Label(window, text="User: " + username , width=20)
+usernameText = tk.Label(window, text="User: " + username, width=20, fg=text_color, bg=background_color)
 usernameText.grid(row=4, column=1, padx=1, pady=5)
+
+updateButton = tk.Button(window, text="Code in GITHUB", fg=text_color, bg=background_color, command=openBrowserUpdate)
+updateButton.grid(row=4, column=2, padx=1, pady=5)
 
 
 # Estilização
@@ -185,13 +220,14 @@ console.configure(font=("Courier", 10), insertbackground=text_color)
 searchFile.configure(bg=background_color, fg=text_color)
 writeButton.configure(bg=background_color, fg=text_color)
 exitButton.configure(bg=background_color, fg=text_color)
-versionText.configure(bg=background_color, fg=text_color)
-usernameText.configure(bg=background_color, fg=text_color)
+versionText.configure(bg=background_color)
+usernameText.configure(bg=background_color)
 
-# Botões de verificação do sistema
-# verific = tk.Button(window, text="Verificar", command=lambda: print("Tempo de Inicialização: ", timeInit, " Separador utilizado é ", separator))
-# verific.grid(row=3, column=0, padx=3, pady=5)
-# verific.configure(bg=background_color, fg=text_color)
-print(os.environ)
 
+def on_closing():
+    if messagebox.askokcancel("AVISO", "Deseja realmente sair?"):
+        window.destroy()
+
+
+window.protocol("WM_DELETE_WINDOW", on_closing)
 window.mainloop()
